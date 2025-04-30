@@ -35,7 +35,8 @@ app.post("/profile",upload.single("image"),async(req,res)=>{
     if(!user){
         console.log("User Not Found");
     }
-    await userModel.findByIdAndUpdate(pId,{profilepic:req.file.filename})
+    user.profilepic=req.file.filename;
+    await user.save();
     res.redirect("/")
 })
 // Homepage
