@@ -1,12 +1,6 @@
 const mongoose = require('mongoose')
-const mongoose = require('mongoose');
-require('dotenv').config();
 const MONGO_URI="mongodb+srv://hemantdixit00000:Hemu1234%40@blogsite.zrwnljt.mongodb.net/blogDB"
-mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("✅ MongoDB connected"))
+mongoose.connect(MONGO_URI).then(() => console.log("✅ MongoDB connected"))
 .catch((err) => console.error("❌ MongoDB connection error:", err));
 const userSchema=mongoose.Schema({
     username:String,
