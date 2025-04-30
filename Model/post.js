@@ -18,7 +18,7 @@ const postSchema=mongoose.Schema({
             text: String,
             user: { 
                 type: mongoose.Schema.Types.ObjectId, 
-                ref: 'User' 
+                ref: 'user' 
             },
             date: {
                 type: Date,
@@ -27,7 +27,7 @@ const postSchema=mongoose.Schema({
             userName:String,
         }
     ],
-    like: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    like: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
       
 })
 
