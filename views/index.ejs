@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My EJS App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            primary: '#2563EB',
+            secondary: '#10B981',
+            danger: '#EF4444',
+          },
+        },
+      },
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
+  <!-- Navbar -->
+  <nav class="flex justify-between  items-center px-6 py-4 bg-white shadow-md sticky top-0 z-50">
+    <% if (token) { %>
+      <!-- Hamburger Button -->
+      <button id="menuToggle" class="lg:hidden text-primary focus:outline-none transition-all duration-300">
+        <svg id="hamburgerIcon" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+          viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg id="closeIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2"
+          viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <!-- Nav Menu -->
+      <div id="menu" class="hidden  flex  flex-col lg:flex lg:flex-row items-left gap-4 absolute lg:static top-[70px] left-0 w-full lg:w-auto bg-white lg:bg-transparent p-4 lg:p-0 shadow-md lg:shadow-none z-40 opacity-0 lg:opacity-100 transition-all duration-300 transform lg:transform-none -translate-x-15 lg:translate-x-0">
+        <a href="/" class="text-sm text-primary hover:text-blue-800 font-medium transition">Home</a>
+        <% if (userType && userType === 'creator' && Auth != "No") { %>
+          <a href="/posts/<%= userId %>" class="text-sm text-primary hover:text-blue-800 font-medium transition">Your Posts</a>
+          <a href="/createPost/<%= userId %>" class="text-sm text-primary hover:text-blue-800 font-medium transition">Create Post</a>
+        <% } else { %>
+          <span class="text-sm text-gray-500 italic">Wait until admin access</span>
+        <% } %>
+      </div>
+      <a href="/logout" class="text-sm text-danger hover:text-red-700 font-semibold transition">Logout</a>
+    <% } %>
+  </nav>
+    <% if (token) { %>
+      <main class="mt-10 px-6 flex flex-col items-center gap-6 pb-20">
+        <div class="flex flex-col items-center gap-2 mb-10">
+          <a href="/profile/<%= userId %>" class="relative group">
+            <img src="/images/uploads/<%= profile %>" alt="Profile Image"
+              class="w-20 h-20 rounded-full object-cover shadow-md border-2 border-primary group-hover:scale-105 transition duration-300" />
+            <span
+              class="absolute bottom-0 right-0 bg-primary text-white text-xs px-2 py-0.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition">Edit</span>
+          </a>
+          <!-- <a href="/profile/<%= userId %>"
+            class="text-sm text-blue-600 hover:underline font-medium transition duration-200">Update Profile</a> -->
+        </div>        
+        <% if (typeof newData !== 'undefined' && newData.length > 0) { %>
+          <% newData.forEach((val, index) => { %>
+            <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-xl transition hover:shadow-2xl hover:scale-[1.02]">
+              <h1 class="text-xl font-bold mb-2 text-primary">Post Creator: <small class="text-gray-700">Mr <%= val.user %></small></h1>
+              <div class="flex justify-between items-center text-sm text-gray-500 mb-3">
+                <span>📅 <%= val.date %></span>
+                <span>👍 <%= val.likes %> Likes</span>
+              </div>
+              <div class="flex justify-center">
+                <img class="rounded" src="/images/postImg/<%=val.photo%>" alt="">
+              </div>
+              <p class="text-gray-800 text-base leading-relaxed mb-4">
+                <%= val.pData %>
+              </p>
+              <!-- Comment Form -->
+              <form action="/comment/<%= val.pId %>" method="post" class="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-4">
+                <input type="text" name="comment" placeholder="Add a comment..."
+                  class="border border-gray-300 rounded-full px-4 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-primary transition" required />
+                <button type="submit"
+                  class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-full transition duration-200 shadow">Comment</button>
+              </form>
+              <!-- Like Button -->
+              <a href="/like/<%= val.pId %>" class="<%= (Array.isArray(val.likeArr) && val.likeArr.some(id => id.toString() === userId.toString())) ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' %> px-4 py-2 rounded-full font-medium transition shadow inline-block">
+                <%= (Array.isArray(val.likeArr) && val.likeArr.some(id => id.toString() === userId.toString())) ? 'Unlike' : 'Like' %>
+              </a>
+              <!-- Comments Section -->
+              <h2 class="text-lg font-semibold mt-6">Comments:</h2>
+              <div class="mt-4 space-y-4 max-h-60 overflow-y-auto pr-2">
+                <% if (val.comment && val.comment.length > 0) { %>
+                  <% val.comment.forEach(cmt => { %>
+                    <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="font-semibold text-sm text-gray-700">User: <%= cmt.userName %></span>
+                        <span class="text-xs text-gray-500">
+                          <%= new Date(cmt.date).toISOString().slice(0, 10) %>
+                        </span>
+                      </div>
+                      <p class="text-gray-800 text-sm"><%= cmt.text %></p>
+                    </div>
+                  <% }) %>
+                <% } else { %>
+                  <p class="text-gray-600 text-sm">No comments yet. Be the first to comment!</p>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p class="text-center text-gray-600 mt-6">No posts available.</p>
+        <% } %>
+      </main>
+    <% } else { %>
+      <!-- Guest View -->
+      <main class="mt-16 flex justify-center items-center px-4">
+        <div class="bg-white shadow-2xl rounded-2xl p-10 w-full max-w-md transition hover:scale-105 duration-300">
+          <h1 class="text-3xl font-extrabold text-danger mb-4 text-center">Login or Signup</h1>
+          <p class="text-md text-gray-600 text-center mb-6">Please login or signup to access the features and view posts.</p>
+          <div class="flex justify-center gap-4">
+            <a href="/login" class="bg-primary hover:bg-blue-600 text-white font-semibold px-5 py-2 rounded-full shadow transition">Login</a>
+            <a href="/signup" class="bg-secondary hover:bg-green-600 text-white font-semibold px-5 py-2 rounded-full shadow transition">Signup</a>
+          </div>
+        </div>
+      </main>
+    <% } %>
+</body>
+ <!-- Toggle Script -->
+ <script>
+  const toggle = document.getElementById('menuToggle');
+  const menu = document.getElementById('menu');
+  const hamburgerIcon = document.getElementById('hamburgerIcon');
+  const closeIcon = document.getElementById('closeIcon');
+
+  toggle.addEventListener('click', () => {
+    const isHidden = menu.classList.contains('hidden');
+
+    if (isHidden) {
+      // OPEN menu with animation
+      menu.classList.remove('hidden');
+      setTimeout(() => {
+        menu.classList.remove('opacity-0', 'translate-x-5');
+      }, 10);
+    } else {
+      // CLOSE menu with reverse animation
+      menu.classList.add('opacity-0', 'translate-x-5');
+      setTimeout(() => {
+        menu.classList.add('hidden');
+      }, 300); // Delay to allow transition to complete
+    }
+    // Toggle hamburger and close icons
+    hamburgerIcon.classList.toggle('hidden');
+    closeIcon.classList.toggle('hidden');
+  });
+</script>
+
+</html>

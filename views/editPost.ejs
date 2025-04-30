@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Post</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in-up {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex flex-col items-center justify-center p-4">
+
+  <!-- Back to Home Button -->
+  <a href="/" class="mb-6 text-sm inline-flex items-center gap-2 px-4 py-2 bg-white text-blue-600 border border-blue-300 rounded-lg shadow hover:bg-blue-50 transition duration-300">
+    ⬅️ Back to Home
+  </a>
+
+  <!-- Edit Form -->
+  <form action="/editPost" method="POST"
+    class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md fade-in-up space-y-6 border border-gray-100">
+    <h1 class="text-3xl font-bold text-center text-blue-700">Edit Your Post</h1>
+
+    <input type="text" name="postId" value="<%=postId%>" hidden />
+
+    <div>
+      <label for="edit" class="block mb-2 text-gray-700 font-medium">New Post Content</label>
+      <input type="text" name="edit" id="edit" placeholder="Enter updated content here..." required
+        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition text-gray-800" />
+    </div>
+
+    <input type="submit" value="Update Post"
+      class="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 cursor-pointer shadow-md" />
+  </form>
+
+</body>
+
+</html>
