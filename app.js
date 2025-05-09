@@ -231,7 +231,7 @@ app.post("/createPost/:id", uploadPostImg.single("pImg"), async (req, res) => {
         const post = await postModel.create({
             postData: text,
             user: userId,
-            photo: postImg
+            photo: "https://res.cloudinary.com/doflt6kzj/image/upload/"+postImg
         });
 
         await userModel.findByIdAndUpdate(userId, {

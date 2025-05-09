@@ -60,8 +60,8 @@
     <main class="mt-10 px-6 flex flex-col items-center gap-6 pb-20">
       <div class="flex flex-col items-center gap-2 mb-10">
         <a href="/profile/<%= userId %>" class="relative group">
-          <img src="/images/uploads/<%= profile %>" alt="Profile Image"
-            class="w-20 h-20 rounded-full object-cover shadow-md border-2 border-primary group-hover:scale-105 transition duration-300" />
+          <img  src="https://res.cloudinary.com/doflt6kzj/image/upload/<%=profile%>" alt="Post Image"
+          class="w-20 h-20 rounded-full object-cover shadow-md border-2 border-primary group-hover:scale-105 transition duration-300" />
           <span
             class="absolute bottom-0 right-0 bg-primary text-white text-xs px-2 py-0.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition">Edit</span>
         </a>
@@ -78,7 +78,7 @@
               <span>📅 <%= val.date.toString().slice(0,15) %></span>
             </div>
             <div class="flex justify-center">
-              <img class="rounded" src="/images/postImg/<%=val.photo%>" alt="Post Image">
+              <img class="rounded" src="<%= val.photo %>" alt="Post Image">
             </div>
             <p class="text-gray-800 text-base leading-relaxed mb-4">
               <%= val.pData %>

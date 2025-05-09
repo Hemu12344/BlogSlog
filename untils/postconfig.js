@@ -1,21 +1,15 @@
-const multer =require("multer");
-const path=require("path");
-const crypto=require("crypto");
+const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("./cloudinary");
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'uploads',
+    allowed_formats: ['jpg', 'png', 'jpeg'],
+    transformation: [{ width: 500, height: 500, crop: "limit" }]
+  }
+});
 
-// Disk Storage 
+const upload = multer({ storage });
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, './public/images/postImg')
-    },
-    filename: function (req, file, cb) {
-        crypto.randomBytes(15,function(err,bytes){
-            const name=bytes.toString("hex")+path.extname(file.originalname)
-            cb(null,name)
-        })
-    } 
-  })
-
-const upload = multer({storage:storage})
-
-module.exports=upload
+module.exports = upload;
