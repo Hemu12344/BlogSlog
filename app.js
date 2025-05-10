@@ -12,6 +12,7 @@ const uploadPostImg = require("./untils/postconfig")
 const app = express();
 const JWT_SECRET = 'sec';
 const fs = require("fs");
+const { default: mongoose } = require("mongoose");
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -27,7 +28,7 @@ app.get("/profile/:uId", function (req, res) {
     res.render("profileupload", { pId })
 })
 
-app.post("/profile", upload.single("image"), async (req, res) => {
+app.post("/profile", upload.single("profile"), async (req, res) => {
     const pId = req.body.pId
     const user = await userModel.findById(pId)
     if (!user) {
@@ -121,6 +122,7 @@ app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await userModel.findOne({ email });
+        
         console.log(user);
 
         if (!user) {
@@ -136,7 +138,6 @@ app.post("/login", async (req, res) => {
             return res.redirect("admin")
         }
         if (isMatch) {
-            
             const payload = { name: user.username, id: user._id, email: user.email, userType: user.type, Auth: user.Auth };
             const token = jwt.sign(payload, JWT_SECRET);
             res.cookie("user", token, { httpOnly: true });
@@ -155,12 +156,11 @@ app.post("/login", async (req, res) => {
 app.get("/Home/:id", async (req, res) => {
     const token = req.cookies.user;
     const userId = req.params.id;
-    console.log(userId);
-    
     let userType = null;
     let Auth = null;
+
     try {
-        const data = await postModel.find()
+        const data = await postModel.find();
         const newData = data.map(post => ({
             pId: post._id,
             userId: post.user ? post.user._id : null,
@@ -173,31 +173,39 @@ app.get("/Home/:id", async (req, res) => {
             likes: post.like ? post.like.length : 0
         }));
 
-        console.log(data);
-
         if (token) {
             try {
                 const decoded = jwt.verify(token, JWT_SECRET);
                 userType = decoded.userType;
                 Auth = decoded.Auth;
-
+                
             } catch (err) {
                 console.log("Invalid token in /Home route");
             }
         }
-        const user = await userModel.findById(userId);
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            console.log("Invalid userId in /Home route");
+            return res.redirect("/login");
+        }
+
+        const newId = new mongoose.Types.ObjectId(userId);
+        const user = await userModel.findById(newId);
+
         if (!user) {
             console.log("User not found");
-            return res.redirect("/login");  // Redirect to login if the user is not found
+            return res.redirect("/login");
         }
-        const profile = user.profilepic;  // Now it's safe to access profilepic
-        console.log(profile);
+
+        const profile = user.profilepic;
         res.render("index", { userId, token, userType, newData, Auth, profile });
+
     } catch (error) {
         console.error("Error loading /Home route:", error);
         res.send("Something went wrong loading the page.");
     }
 });
+
 
 
 // View posts

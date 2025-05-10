@@ -67,7 +67,7 @@
               <p class="text-base text-gray-800 leading-relaxed w-full sm:pr-4 break-words">
                 <%= post.postData %>
               </p>
-              <img src="/images/postImg/<%=post.photo %>" class="lg:w-15" alt="">
+              <img src="<%=post.photo %>" class="lg:w-15 rounded" alt="">
             </div>
             <div class="flex justify-between">
               <a href="/edit/<%= post._id %>" class="text-blue-500  hover:text-blue-800 font-medium whitespace-nowrap">Edit</a>
