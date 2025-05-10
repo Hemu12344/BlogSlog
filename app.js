@@ -12,7 +12,8 @@ const uploadPostImg = require("./untils/postconfig")
 const app = express();
 const JWT_SECRET = 'sec';
 
-const fs = require("fs")
+const fs = require("fs");
+const { use } = require("react");
 
 // Middlewares
 app.use(express.json());
@@ -138,6 +139,7 @@ app.post("/login", async (req, res) => {
             return res.redirect("admin")
         }
         if (isMatch) {
+            
             const payload = { name: user.username, id: user._id, email: user.email, userType: user.type, Auth: user.Auth };
             const token = jwt.sign(payload, JWT_SECRET);
             res.cookie("user", token, { httpOnly: true });
@@ -156,10 +158,12 @@ app.post("/login", async (req, res) => {
 app.get("/Home/:id", async (req, res) => {
     const token = req.cookies.user;
     const userId = req.params.id;
+    console.log(userId);
+    
     let userType = null;
     let Auth = null;
     try {
-        const data = await postModel.find().populate('user');
+        const data = await postModel.find()
         const newData = data.map(post => ({
             pId: post._id,
             userId: post.user ? post.user._id : null,
@@ -369,28 +373,48 @@ app.get("/rem/:pId/:uId", async function (req, res) {
 
 
 //Edit Your Post 
-
 app.get("/edit/:pId", function (req, res) {
-    postId = req.params.pId
-    res.render("editPost", { postId })
-})
+    const pId = req.params.pId;
+
+    if (!mongoose.Types.ObjectId.isValid(pId)) {
+        console.log("Invalid Post ID");
+        return res.redirect("/");
+    }
+
+    res.render("editPost", { postId: pId });
+});
 
 app.post("/editPost", uploadPostImg.single("editPhoto"), async function (req, res) {
-    const pdata = await postModel.findById(req.body.postId)
-    const newData = req.body.edit
-    const newPhoto = req.file.filename
-    if (!pdata) {
-        res.render("login")
-    }
-    try {
-        await postModel.findByIdAndUpdate(req.body.postId, { postData: newData, photo: newPhoto })
-        console.log("Update Success fully");
-        res.redirect("/")
-    } catch (error) {
-        console.log("Error Is", error);
-    }
-})
+    const postId = req.body.postId;
 
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+        console.log("Invalid Post ID");
+        return res.redirect("/");
+    }
+
+    try {
+        const pdata = await postModel.findById(postId);
+
+        if (!pdata) {
+            console.log("Post not found");
+            return res.redirect("/");
+        }
+
+        const newData = req.body.edit;
+        const newPhoto = req.file ? req.file.filename : pdata.photo;
+
+        await postModel.findByIdAndUpdate(postId, {
+            postData: newData,
+            photo: newPhoto,
+        });
+
+        console.log("Update Successful");
+        res.redirect("/");
+    } catch (error) {
+        console.error("Update Error:", error);
+        res.redirect("/");
+    }
+});
 // Admin Panel
 
 

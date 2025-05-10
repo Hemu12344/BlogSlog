@@ -69,7 +69,7 @@
             class="text-sm text-blue-600 hover:underline font-medium transition duration-200">Update Profile</a> -->
       </div>
       <% if (typeof newData !=='undefined' && newData.length> 0) { %>
-        <% newData.forEach((val, index)=> { %>
+        <% newData.slice().reverse().forEach((val, index)=> { %>
           <div
             class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-xl transition hover:shadow-2xl hover:scale-[1.02]">
             <h1 class="text-xl font-bold mb-2 text-primary">Post Creator: <small class="text-gray-700">Mr <%= val.user
