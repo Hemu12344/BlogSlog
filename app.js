@@ -11,10 +11,7 @@ const upload = require("./untils/multerconfig")
 const uploadPostImg = require("./untils/postconfig")
 const app = express();
 const JWT_SECRET = 'sec';
-
 const fs = require("fs");
-const { use } = require("react");
-
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
